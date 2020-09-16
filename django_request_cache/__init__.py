@@ -23,7 +23,18 @@ def cache_calculate_key(*args, **kwargs):
     :rtype: basestring
     """
     # combine args with kwargs, separated by the cache_args_kwargs_marker
-    key = args + (cache_args_kwargs_marker,) + tuple(sorted(kwargs.items()))
+    key = list()
+    for arg in args:
+        try:
+            key.append(hash(arg))
+        except TypeError:
+            key.append(arg)
+    key.append(cache_args_kwargs_marker)
+    for k, v in kwargs.items():
+        try:
+            key.append((k, hash(v)))
+        except TypeError:
+            key.append((k, v))
     # return as a string
     return str(key)
 
